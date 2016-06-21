@@ -1,0 +1,356 @@
+#+TITLE: Groovy Lunch and Learn
+#+EMAIL: esharapov@infusion.com
+#+AUTHOR: Evgeniy Sharapov
+#+DESCRIPTION:  Groovy Lunch and Learn
+#+EPRESENT_FRAME_LEVEL: 2
+#+OPTIONS: toc:1 num:nil
+#+REVEAL_HLEVEL: 3
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+REVEAL_EXTRA_CSS: ./media/overrides.css
+#+REVEAL_THEME: simple
+#+REVEAL_TRANS: slide
+#+REVEAL_PLUGINS: (markdown notes)
+#+REVEAL_MARGIN: 0
+
+* Maven Projects
+Adding Groovy to Maven based Java project
+
+** Add groovy dependencies
+
+#+BEGIN_SRC xml
+  <dependency>
+    <groupId>org.codehaus.groovy</groupId>
+    <artifactId>groovy-all</artifactId>
+  </dependency>
+#+END_SRC
+
+Use modular approach =groovy-jsr223=, =groovy-json=, =groovy-xml=, =groovy-test=
+
+** Change compiler
+ #+BEGIN_SRC xml
+   <plugin>
+     <groupId>org.apache.maven.plugins</groupId>
+     <artifactId>maven-compiler-plugin</artifactId>
+     <version>3.1</version>
+     <configuration>
+       <source>${java.version}</source>
+       <target>${java.version}</target>
+       <encoding>UTF-8</encoding>
+       <compilerId>groovy-eclipse-compiler</compilerId>
+     </configuration>
+     <dependencies>
+       <dependency>
+         <groupId>org.codehaus.groovy</groupId>
+         <artifactId>groovy-eclipse-compiler</artifactId>
+         <version>2.9.2-01</version>
+       </dependency>
+       <dependency>
+         <groupId>org.codehaus.groovy</groupId>
+         <artifactId>groovy-eclipse-batch</artifactId>
+         <version>2.4.3-01</version>
+       </dependency>
+     </dependencies>
+   </plugin>
+ #+END_SRC
+
+* Tools (Console)
+
+  In case of IDE start using =groovyConsole=
+
+  Project → Run As → Groovy Console
+
+#+BEGIN_NOTES
+import com.metlife.harmony.documents.ModelDocument
+import com.metlife.harmony.documents.SecurityDocument
+
+def md = new ModelDocument()
+
+md.security = SecurityDocument.generateSecurityDocument([_security: [ownedBy: 'Evgeniy', groups: ['admin']]])
+
+md.security
+
+md.asMap()
+#+END_NOTES
+
+* Groovy In Tests
+** Get Started
+  Instead of Java tests write groovy test.
+  Start from renaming =SomethingTest.java= into
+  =SomethingTest.groovy=
+
+#+REVEAL: split
+
+  In Eclipse could use context menu
+
+  [[file:img/2016-06-20_17-28-59.png]]
+
+#+REVEAL: split
+
+  Running commands
+  #+BEGIN_SRC sh
+    mvn clean test
+  #+END_SRC
+  #+BEGIN_SRC sh
+    mvn clean verify
+  #+END_SRC
+  should yield the  same result.
+
+#+ATTR_REVEAL: :frag roll-in
+  In Eclipse one could run =Alt-Shift-X, T= to run file using JUnit
+  plugin (or context menu =Run As= -> =JUnit Text=)
+
+** Naming Methods
+
+     Use string as a test method name
+ #+BEGIN_SRC groovy
+   @Test
+   void "BeatHandler should send beats to symphony" () {
+     def result = symphonyService.sendBeat(beat)
+     assert result != null
+   }
+ #+END_SRC
+
+** Comprehensive Asserts
+   Use Groovy =assert=
+ #+NAME: AuraPostScriptTest.groovy
+ #+BEGIN_SRC groovy
+   assert Questions != null
+   assert Questions.size() == 11
+ #+END_SRC
+
+   Error will yield comprehensive error message
+
+   [[file:img/2016-06-20_17-50-48.png]]
+
+** Less code is Better
+
+*** Less Java Noise
+
+     No explicit typing, semicolons, etc
+     #+name: AuraPostScriptTest.groovy
+     #+BEGIN_SRC groovy
+       def nested = q.Questions
+       assert nested.size() == 0
+     #+END_SRC
+
+#+REVEAL: split
+
+     Instead of =get/set= methods or =Map= access use property
+     notation =.=
+
+     #+BEGIN_SRC groovy
+       resourceGroup.getResourcePrototype().getName() == SERVER_TYPE_NAME
+       resourceGroup.resourcePrototype.name == SERVER_TYPE_NAME
+
+       resourcePrototype.setName("something")
+       resourcePrototype.name = "something"
+     #+END_SRC
+
+
+*** Hamcrest asserts (or any JUnit assertions)
+
+    Test assertions in Java
+    #+NAME: ContactTest.java
+    #+BEGIN_SRC java
+      assertThat((String) c.get("firstName"), is("Stanley"));
+      assertThat(c.get("address"), is(notNullValue()));
+      assertThat(((Map) c.get("address")).get("zip"), is(notNullValue()));
+      assertThat((String) ((Map) c.get("address")).get("zip"), is("56341"));
+     #+END_SRC
+
+#+REVEAL: split
+
+    Become much easier to read
+
+     #+NAME: ContactTest.groovy
+     #+BEGIN_SRC groovy
+       assertThat(c.firstName, is("Stanley"));
+       assertThat(c.address, is(notNullValue()));
+       assertThat(c.address.zip, is(notNullValue()));
+       assertThat(c.address.zip, is("56341"));
+     #+END_SRC
+
+
+*** Test Data Structures
+
+    Easily creating maps, lists
+    #+name: ModelDocumentFieldsIT.java
+    #+BEGIN_SRC groovy
+      Map<String, Object> object = Maps.newHashMap(
+                           ImmutableMap.<String, Object>of(
+                             "key1", "value1",
+                             "key2", "value2"));
+
+      def object = [key1: "value1", key2: "value2"]
+    #+END_SRC
+#+REVEAL: split
+    Easily check data structure (=aura_output_json= is a Map of maps
+    of maps)
+    #+name: AuraPostScriptTest.groovy
+    #+BEGIN_SRC groovy
+      // check for no nested questions or all nested questions are NPCL
+      aura_output_json.Questions.each { q ->
+         def nested = q.Questions
+         assert nested.size() == 0 || (
+                nested.size() > 0 &&
+                nested.findAll({qq -> qq.Alias == 'NPCL' }).size() == nested.size()
+            )
+      }
+    #+END_SRC
+
+#+REVEAL: split
+
+    Easily check structured data (XML, JSON) with =GPath=
+    #+name: MLJLoggingTest.groovy
+    #+BEGIN_SRC groovy
+       def simpleModel = new JsonSlurper().parseText('''{
+      "application": {
+        "flowStateId": "54faf596-7659-42dd-839d-2a5f346ca27c",
+        "insured": {
+          "middleName": null,
+          "lastName": "ãƒ‚ãƒ†",
+          "firstNameKanji": "ä¸–ä¸˜",
+          "lastNameKanji": "ä¸“ä¸•",
+        .....
+        ''')
+
+        assert simpleModel.application.insured.middleName == null
+    #+END_SRC
+
+*** Testing DSL
+
+    To make code even better use DSL
+
+    Examples in =AuraPostScriptTest.groovy= and
+    =HarmonyGroovyScriptsTest.groovy=
+
+    Result in following unit tests
+
+#+BEGIN_SRC groovy
+  @Test
+  void "Testing issue HA-6385" () {
+     withContextFrom 'aura/ha_6385_app.json' run 'scripts/AuraPostScript.groovy' then {
+        def aura_output_json = application.aura.general.aura_output_json
+        assert aura_output_json != null
+        assert aura_output_json.Questions.size() == 8
+        assert aura_output_json.Questions.findAll({it.Visible == true}).size() == 8
+     }
+  }
+#+END_SRC
+* Form Flow Scripting
+
+** Form Definition
+
+    Typical form definition in Mongo
+ #+BEGIN_SRC json
+   {
+       "preAction": {
+           "scriptLanguage" : "GROOVY",
+           "action" : ""
+       },
+       "postAction": {
+           "scriptLanguage" : "GROOVY",
+           "action" : ""
+       },
+       "visibilityAction": {
+           "scriptLanguage" : "GROOVY",
+           "action" : "view.visibility { true }"
+       }
+   }
+ #+END_SRC
+
+** Visibility scripts
+   Whether form is available =FlowFlowService=
+
+   Form is fixed to closure
+   #+BEGIN_SRC groovy
+     view.visible {
+       // boolean
+     }
+   #+END_SRC
+
+#+BEGIN_NOTES
+   class FormView {
+   public Boolean visible(final Closure<Boolean> closure) {
+   return closure.call();
+   }
+   }
+#+END_NOTES
+
+** Pre-scripts
+
+   Theoretically this action is executed before form is sent to a
+   client. However see =StartNewCommandHandler=, =NextCommandHandler=,
+   etc.
+
+#   Illustrate steps. with NextCommandHandler
+
+** Post-scripts
+
+   Theoretically action is executed after form is submitted. However
+   see =StartNewCommandHandler=, =NextCommandHandler=, etc.
+
+#   Illustrate steps with NextCommandHandler
+
+** Scripting DSL
+
+   DSL words are located in =com.metlife.harmony.scripts.groovy.dsl=
+
+   All the DSL words are used as function applications
+
+   #+BEGIN_SRC java
+     public class DSLWord extends Closure<T> {
+        public T call (Object... arguments) {
+            // code
+        }
+     }
+   #+END_SRC
+
+** Special DSL keyword
+
+   Run groovy scripts with =runScript=
+
+#+BEGIN_SRC groovy
+runScript('/scripts/QuestionFilter.groovy')
+#+END_SRC
+
+   Could use path that exists in the file system (i.e. Spring
+   resource)
+
+   Or corresponding document from =scripts= collection.
+
+** Using =@Scriptable=
+
+   Expose any Spring bean to the script using =@Scriptable=
+
+   #+name: DataService.java
+   #+BEGIN_SRC java
+     @Scriptable
+     @Service
+     public class DataService implements
+                                  ApplicationListener<ContextRefreshedEvent> {
+         // ...
+     }
+   #+END_SRC
+
+   Caveat: bean is available by its name.
+* Anywhere (potentially)
+  Write in Java or Groovy or both.
+  Not only tests but actual code.
+
+* Eclipse Plugins
+
+I use STS 3.7.3 which is based on Eclipse 4.5 (Mars)
+
+Plugins to have when dealing with groovy
+
+1. Groovy-Eclipse plugin
+  http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/
+
+2. Maven Development Tools
+  https://marketplace.eclipse.org/content/maven-development-tools-requires-m2e-16/metrics
+
+* Intellij Idea Plugins
+Groovy plugin comes with IDE and most of the functionality works out
+of the box.
+

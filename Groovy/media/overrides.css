@@ -1,0 +1,78 @@
+@import url(http://fonts.googleapis.com/css?family=Architects+Daughter|Open+Sans:400italic,700italic,400,700|Inconsolata:400,700);
+
+.reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6,
+.reveal .h4 {
+    font-family: 'Architects Daughter', cursive;
+}
+.reveal .h4 {
+    font-size: 1.6em;
+}
+
+p {
+    font-family: 'Open Sans', sans-serif;
+    text-align: justify;
+}
+
+.reveal p {
+    margin-bottom: 1em;
+}
+
+/* Fix for last slide paragraphs */
+.reveal .h4 p {
+    margin-bottom: 0;
+}
+
+.reveal h4 {
+    font-size: 1.6em;
+}
+
+.reveal section img {
+    border: 0;
+}
+
+.reveal code {
+    font-family: 'Inconsolata', monospace;
+    color: indianred;
+    font-size: 90%;
+}
+
+.reveal pre {
+    width: 100%; !important
+}
+
+body {
+    background-image: url(tl_corner.png);
+    background-repeat: no-repeat;
+}
+
+.backgrounds {
+    background-image: url(image1_med.png);
+    background-repeat: no-repeat;
+    background-position: 90% 95%, center;
+}
+
+span.underline {
+    -moz-border-radius:10px 10px 10px 10px;
+    border-radius:10px 10px 10px 10px;
+    background-color: #fae6e6;
+    padding: 5px;
+}
+
+.reveal img.floatRight {
+    float: right;
+    margin: 1em;
+}
+.reveal img.floatLeft {
+    float: left;
+    margin: 1em;
+}
+.reveal img.floatRightClear {
+    float: right;
+    clear: right;
+    margin: 1em;
+}
+.reveal img.floatLeftClear {
+    float: left;
+    clear: left;
+    margin: 1em;
+}
