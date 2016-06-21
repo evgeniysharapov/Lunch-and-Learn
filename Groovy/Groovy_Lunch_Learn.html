@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Groovy Lunch and Learn</title>
+<meta name="author" content="(Evgeniy Sharapov)"/>
+<meta name="description" content="Groovy Lunch and Learn"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/simple.css" id="theme"/>
+
+<link rel="stylesheet" href="./media/overrides.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Groovy Lunch and Learn</h1><h2 class="author">Evgeniy Sharapov</h2><p class="date">Created: 2016-06-21 Tue 14:16</p>
+</section>
+<section id="table-of-contents">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#/slide-orgheadline3">Maven Projects</a></li>
+<li><a href="#/slide-orgheadline4">Tools (Console)</a></li>
+<li><a href="#/slide-orgheadline13">Groovy In Tests</a></li>
+<li><a href="#/slide-orgheadline21">Form Flow Scripting</a></li>
+<li><a href="#/slide-orgheadline22">Anywhere (potentially)</a></li>
+<li><a href="#/slide-orgheadline23">Eclipse Plugins</a></li>
+<li><a href="#/slide-orgheadline24">Intellij Idea Plugins</a></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<section id="slide-orgheadline3">
+<h2 id="orgheadline3">Maven Projects</h2>
+<p>
+Adding Groovy to Maven based Java project
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline1">
+<h3 id="orgheadline1">Add groovy dependencies</h3>
+<div class="org-src-container">
+
+<pre  class="src src-xml">&lt;<span style="color: #cc0000;">dependency</span>&gt;
+  &lt;<span style="color: #cc0000;">groupId</span>&gt;org.codehaus.groovy&lt;/<span style="color: #cc0000;">groupId</span>&gt;
+  &lt;<span style="color: #cc0000;">artifactId</span>&gt;groovy-all&lt;/<span style="color: #cc0000;">artifactId</span>&gt;
+&lt;/<span style="color: #cc0000;">dependency</span>&gt;
+</pre>
+</div>
+
+<p>
+Use modular approach <code>groovy-jsr223</code>, <code>groovy-json</code>, <code>groovy-xml</code>, <code>groovy-test</code>
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline2">
+<h3 id="orgheadline2">Change compiler</h3>
+<div class="org-src-container">
+
+<pre  class="src src-xml">&lt;<span style="color: #cc0000;">plugin</span>&gt;
+  &lt;<span style="color: #cc0000;">groupId</span>&gt;org.apache.maven.plugins&lt;/<span style="color: #cc0000;">groupId</span>&gt;
+  &lt;<span style="color: #cc0000;">artifactId</span>&gt;maven-compiler-plugin&lt;/<span style="color: #cc0000;">artifactId</span>&gt;
+  &lt;<span style="color: #cc0000;">version</span>&gt;3.1&lt;/<span style="color: #cc0000;">version</span>&gt;
+  &lt;<span style="color: #cc0000;">configuration</span>&gt;
+    &lt;<span style="color: #cc0000;">source</span>&gt;${java.version}&lt;/<span style="color: #cc0000;">source</span>&gt;
+    &lt;<span style="color: #cc0000;">target</span>&gt;${java.version}&lt;/<span style="color: #cc0000;">target</span>&gt;
+    &lt;<span style="color: #cc0000;">encoding</span>&gt;UTF-8&lt;/<span style="color: #cc0000;">encoding</span>&gt;
+    &lt;<span style="color: #cc0000;">compilerId</span>&gt;groovy-eclipse-compiler&lt;/<span style="color: #cc0000;">compilerId</span>&gt;
+  &lt;/<span style="color: #cc0000;">configuration</span>&gt;
+  &lt;<span style="color: #cc0000;">dependencies</span>&gt;
+    &lt;<span style="color: #cc0000;">dependency</span>&gt;
+      &lt;<span style="color: #cc0000;">groupId</span>&gt;org.codehaus.groovy&lt;/<span style="color: #cc0000;">groupId</span>&gt;
+      &lt;<span style="color: #cc0000;">artifactId</span>&gt;groovy-eclipse-compiler&lt;/<span style="color: #cc0000;">artifactId</span>&gt;
+      &lt;<span style="color: #cc0000;">version</span>&gt;2.9.2-01&lt;/<span style="color: #cc0000;">version</span>&gt;
+    &lt;/<span style="color: #cc0000;">dependency</span>&gt;
+    &lt;<span style="color: #cc0000;">dependency</span>&gt;
+      &lt;<span style="color: #cc0000;">groupId</span>&gt;org.codehaus.groovy&lt;/<span style="color: #cc0000;">groupId</span>&gt;
+      &lt;<span style="color: #cc0000;">artifactId</span>&gt;groovy-eclipse-batch&lt;/<span style="color: #cc0000;">artifactId</span>&gt;
+      &lt;<span style="color: #cc0000;">version</span>&gt;2.4.3-01&lt;/<span style="color: #cc0000;">version</span>&gt;
+    &lt;/<span style="color: #cc0000;">dependency</span>&gt;
+  &lt;/<span style="color: #cc0000;">dependencies</span>&gt;
+&lt;/<span style="color: #cc0000;">plugin</span>&gt;
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline4">
+<h2 id="orgheadline4">Tools (Console)</h2>
+<p>
+In case of IDE start using <code>groovyConsole</code>
+</p>
+
+<p>
+Project → Run As → Groovy Console
+</p>
+
+<aside class="notes">
+<p>
+import com.metlife.harmony.documents.ModelDocument
+import com.metlife.harmony.documents.SecurityDocument
+</p>
+
+<p>
+def md = new ModelDocument()
+</p>
+
+<p>
+md.security = SecurityDocument.generateSecurityDocument([<sub>security</sub>: [ownedBy: 'Evgeniy', groups: ['admin']]])
+</p>
+
+<p>
+md.security
+</p>
+
+<p>
+md.asMap()
+</p>
+
+</aside>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline13">
+<h2 id="orgheadline13">Groovy In Tests</h2>
+<div class="outline-text-2" id="text-orgheadline13">
+</div></section>
+</section>
+<section>
+<section id="slide-orgheadline5">
+<h3 id="orgheadline5">Get Started</h3>
+<p>
+Instead of Java tests write groovy test.
+Start from renaming <code>SomethingTest.java</code> into
+<code>SomethingTest.groovy</code>
+</p>
+
+</section>
+<section>
+
+<p>
+In Eclipse could use context menu
+</p>
+
+
+<div class="figure">
+<p><img src="img/2016-06-20_17-28-59.png" alt="2016-06-20_17-28-59.png" />
+</p>
+</div>
+
+</section>
+<section>
+
+<p>
+Running commands
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-sh">mvn clean test
+</pre>
+</div>
+<div class="org-src-container">
+
+<pre  class="src src-sh">mvn clean verify
+</pre>
+</div>
+<p>
+should yield the  same result.
+</p>
+
+<p class="fragment roll-in">
+In Eclipse one could run <code>Alt-Shift-X, T</code> to run file using JUnit
+plugin (or context menu <code>Run As</code> -&gt; <code>JUnit Text</code>)
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline6">
+<h3 id="orgheadline6">Naming Methods</h3>
+<p>
+Use string as a test method name
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy"><span style="color: #ce5c00;">@Test</span>
+<span style="color: #3465a4; font-weight: bold;">void</span> <span style="color: #4e9a06;">"BeatHandler should send beats to symphony"</span> () {
+  <span style="color: #3465a4;">def</span> <span style="color: #8f5902;">result</span> = symphonyService.sendBeat(beat)
+  assert result != <span style="color: #ce5c00;">null</span>
+}
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline7">
+<h3 id="orgheadline7">Comprehensive Asserts</h3>
+<p>
+Use Groovy <code>assert</code>
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="AuraPostScriptTest.groovy"><span style="color: #3465a4; font-weight: bold;">assert</span> <span style="color: #8f5902;">Questions</span> != <span style="color: #ce5c00;">null</span>
+assert Questions.size() == 11
+</pre>
+</div>
+
+<p>
+Error will yield comprehensive error message
+</p>
+
+
+<div class="figure">
+<p><img src="img/2016-06-20_17-50-48.png" alt="2016-06-20_17-50-48.png" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline12">
+<h3 id="orgheadline12">Less code is Better</h3>
+<div class="outline-text-3" id="text-orgheadline12">
+</div></section>
+</section>
+<section>
+<section id="slide-orgheadline8">
+<h4 id="orgheadline8">Less Java Noise</h4>
+<p>
+No explicit typing, semicolons, etc
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="AuraPostScriptTest.groovy"><span style="color: #3465a4;">def</span> <span style="color: #8f5902;">nested</span> = <span style="color: #ce5c00;">q</span>.Questions
+assert nested.size() == 0
+</pre>
+</div>
+
+</section>
+<section>
+
+<p>
+Instead of <code>get/set</code> methods or <code>Map</code> access use property
+notation <code>.</code>
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-groovy">resourceGroup.getResourcePrototype().getName() == SERVER_TYPE_NAME
+resourceGroup.resourcePrototype.name == SERVER_TYPE_NAME
+
+resourcePrototype.setName(<span style="color: #4e9a06;">"something"</span>)
+resourcePrototype.name = <span style="color: #4e9a06;">"something"</span>
+</pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline9">
+<h4 id="orgheadline9">Hamcrest asserts (or any JUnit assertions)</h4>
+<p>
+Test assertions in Java
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-java" id="ContactTest.java">assertThat((<span style="color: #3465a4; font-weight: bold;">String</span>) c.get(<span style="color: #4e9a06;">"firstName"</span>), is(<span style="color: #4e9a06;">"Stanley"</span>));
+assertThat(c.get(<span style="color: #4e9a06;">"address"</span>), is(notNullValue()));
+assertThat(((<span style="color: #3465a4; font-weight: bold;">Map</span>) c.get(<span style="color: #4e9a06;">"address"</span>)).get(<span style="color: #4e9a06;">"zip"</span>), is(notNullValue()));
+assertThat((<span style="color: #3465a4; font-weight: bold;">String</span>) ((<span style="color: #3465a4; font-weight: bold;">Map</span>) c.get(<span style="color: #4e9a06;">"address"</span>)).get(<span style="color: #4e9a06;">"zip"</span>), is(<span style="color: #4e9a06;">"56341"</span>));
+</pre>
+</div>
+
+</section>
+<section>
+
+<p>
+Become much easier to read
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="ContactTest.groovy">assertThat(c.firstName, is(<span style="color: #4e9a06;">"Stanley"</span>));
+assertThat(c.address, is(notNullValue()));
+assertThat(c.address.zip, is(notNullValue()));
+assertThat(c.address.zip, is(<span style="color: #4e9a06;">"56341"</span>));
+</pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline10">
+<h4 id="orgheadline10">Test Data Structures</h4>
+<p>
+Easily creating maps, lists
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="ModelDocumentFieldsIT.java"><span style="color: #3465a4; font-weight: bold;">Map</span>&lt;String, Object&gt; <span style="color: #8f5902;">object</span> = Maps.newHashMap(
+                     ImmutableMap.&lt;String, Object&gt;of(
+                       <span style="color: #4e9a06;">"key1"</span>, <span style="color: #4e9a06;">"value1"</span>,
+                       <span style="color: #4e9a06;">"key2"</span>, <span style="color: #4e9a06;">"value2"</span>));
+
+<span style="color: #3465a4;">def</span> <span style="color: #8f5902;">object</span> = [key1: <span style="color: #4e9a06;">"value1"</span>, key2: <span style="color: #4e9a06;">"value2"</span>]
+</pre>
+</div>
+</section>
+<section>
+<p>
+Easily check data structure (<code>aura_output_json</code> is a Map of maps
+of maps)
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="AuraPostScriptTest.groovy"><span style="color: #888a85; font-style: italic;">// </span><span style="color: #888a85; font-style: italic;">check for no nested questions or all nested questions are NPCL</span>
+<span style="color: #ce5c00;">aura_output_json</span>.Questions.each { q -&gt;
+   <span style="color: #3465a4;">def</span> nested = <span style="color: #ce5c00;">q</span>.Questions
+   assert nested.size() == 0 || (
+          nested.size() &gt; 0 &amp;&amp;
+          nested.findAll({qq -&gt; <span style="color: #ce5c00;">qq</span>.Alias == <span style="color: #4e9a06;">'NPCL'</span> }).size() == nested.size()
+      )
+}
+</pre>
+</div>
+
+</section>
+<section>
+
+<p>
+Easily check structured data (XML, JSON) with <code>GPath</code>
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy" id="MLJLoggingTest.groovy"> <span style="color: #3465a4;">def</span> <span style="color: #8f5902;">simpleModel</span> = <span style="color: #3465a4;">new</span> <span style="color: #3465a4; font-weight: bold;">JsonSlurper</span>().parseText(<span style="color: #4e9a06;">'''{</span>
+<span style="color: #4e9a06;">"application": {</span>
+<span style="color: #4e9a06;">  "flowStateId": "54faf596-7659-42dd-839d-2a5f346ca27c",</span>
+<span style="color: #4e9a06;">  "insured": {</span>
+<span style="color: #4e9a06;">    "middleName": null,</span>
+<span style="color: #4e9a06;">    "lastName": "&#227;&#402;&#8218;&#227;&#402;&#8224;",</span>
+<span style="color: #4e9a06;">    "firstNameKanji": "&#228;&#184;&#8211;&#228;&#184;&#732;",</span>
+<span style="color: #4e9a06;">    "lastNameKanji": "&#228;&#184;&#8220;&#228;&#184;&#8226;",</span>
+<span style="color: #4e9a06;">  .....</span>
+<span style="color: #4e9a06;">  '''</span>)
+
+  assert simpleModel.application.insured.middleName == <span style="color: #ce5c00;">null</span>
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline11">
+<h4 id="orgheadline11">Testing DSL</h4>
+<p>
+To make code even better use DSL
+</p>
+
+<p>
+Examples in <code>AuraPostScriptTest.groovy</code> and
+<code>HarmonyGroovyScriptsTest.groovy</code>
+</p>
+
+<p>
+Result in following unit tests
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-groovy"><span style="color: #ce5c00;">@Test</span>
+<span style="color: #3465a4; font-weight: bold;">void</span> <span style="color: #4e9a06;">"Testing issue HA-6385"</span> () {
+   withContextFrom <span style="color: #4e9a06;">'aura/ha_6385_app.json'</span> run <span style="color: #4e9a06;">'scripts/AuraPostScript.groovy'</span> then {
+      <span style="color: #3465a4;">def</span> <span style="color: #8f5902;">aura_output_json</span> = application.aura.general.aura_output_json
+      assert aura_output_json != <span style="color: #ce5c00;">null</span>
+      assert <span style="color: #ce5c00;">aura_output_json</span>.Questions.size() == 8
+      assert <span style="color: #ce5c00;">aura_output_json</span>.Questions.findAll({<span style="color: #ce5c00;">it</span>.Visible == <span style="color: #ce5c00;">true</span>}).size() == 8
+   }
+}
+</pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline21">
+<h2 id="orgheadline21">Form Flow Scripting</h2>
+<div class="outline-text-2" id="text-orgheadline21">
+</div></section>
+</section>
+<section>
+<section id="slide-orgheadline14">
+<h3 id="orgheadline14">Form Definition</h3>
+<p>
+Typical form definition in Mongo
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-json">{
+    <span style="color: #3465a4;">"preAction"</span>: {
+        <span style="color: #3465a4;">"scriptLanguage"</span> : <span style="color: #4e9a06;">"GROOVY"</span>,
+        <span style="color: #3465a4;">"action"</span> : <span style="color: #4e9a06;">""</span>
+    },
+    <span style="color: #3465a4;">"postAction"</span>: {
+        <span style="color: #3465a4;">"scriptLanguage"</span> : <span style="color: #4e9a06;">"GROOVY"</span>,
+        <span style="color: #3465a4;">"action"</span> : <span style="color: #4e9a06;">""</span>
+    },
+    <span style="color: #3465a4;">"visibilityAction"</span>: {
+        <span style="color: #3465a4;">"scriptLanguage"</span> : <span style="color: #4e9a06;">"GROOVY"</span>,
+        <span style="color: #3465a4;">"action"</span> : <span style="color: #4e9a06;">"view.visibility { true }"</span>
+    }
+}
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline15">
+<h3 id="orgheadline15">Visibility scripts</h3>
+<p>
+Whether form is available <code>FlowFlowService</code>
+</p>
+
+<p>
+Form is fixed to closure
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-groovy">view.visible {
+  <span style="color: #888a85; font-style: italic;">// </span><span style="color: #888a85; font-style: italic;">boolean</span>
+}
+</pre>
+</div>
+
+<aside class="notes">
+<p>
+class FormView {
+public Boolean visible(final Closure&lt;Boolean&gt; closure) {
+return closure.call();
+}
+}
+</p>
+
+</aside>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline16">
+<h3 id="orgheadline16">Pre-scripts</h3>
+<p>
+Theoretically this action is executed before form is sent to a
+client. However see <code>StartNewCommandHandler</code>, <code>NextCommandHandler</code>,
+etc.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline17">
+<h3 id="orgheadline17">Post-scripts</h3>
+<p>
+Theoretically action is executed after form is submitted. However
+see <code>StartNewCommandHandler</code>, <code>NextCommandHandler</code>, etc.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline18">
+<h3 id="orgheadline18">Scripting DSL</h3>
+<p>
+DSL words are located in <code>com.metlife.harmony.scripts.groovy.dsl</code>
+</p>
+
+<p>
+All the DSL words are used as function applications
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #3465a4;">public</span> <span style="color: #3465a4;">class</span> <span style="color: #3465a4; font-weight: bold;">DSLWord</span> <span style="color: #3465a4;">extends</span> <span style="color: #3465a4; font-weight: bold;">Closure</span>&lt;<span style="color: #3465a4; font-weight: bold;">T</span>&gt; {
+   <span style="color: #3465a4;">public</span> <span style="color: #3465a4; font-weight: bold;">T</span> <span style="color: #cc0000;">call</span> (<span style="color: #3465a4; font-weight: bold;">Object</span>... <span style="color: #8f5902;">arguments</span>) {
+       <span style="color: #888a85; font-style: italic;">// </span><span style="color: #888a85; font-style: italic;">code</span>
+   }
+}
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline19">
+<h3 id="orgheadline19">Special DSL keyword</h3>
+<p>
+Run groovy scripts with <code>runScript</code>
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-groovy">runScript(<span style="color: #4e9a06;">'/scripts/QuestionFilter.groovy'</span>)
+</pre>
+</div>
+
+<p>
+Could use path that exists in the file system (i.e. Spring
+resource)
+</p>
+
+<p>
+Or corresponding document from <code>scripts</code> collection.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline20">
+<h3 id="orgheadline20">Using <code>@Scriptable</code></h3>
+<p>
+Expose any Spring bean to the script using <code>@Scriptable</code>
+</p>
+
+<div class="org-src-container">
+
+<pre  class="src src-java" id="DataService.java"><span style="color: #ce5c00;">@Scriptable</span>
+<span style="color: #ce5c00;">@Service</span>
+<span style="color: #3465a4;">public</span> <span style="color: #3465a4;">class</span> <span style="color: #3465a4; font-weight: bold;">DataService</span> <span style="color: #3465a4;">implements</span>
+                             <span style="color: #3465a4; font-weight: bold;">ApplicationListener</span>&lt;<span style="color: #3465a4; font-weight: bold;">ContextRefreshedEvent</span>&gt; {
+    <span style="color: #888a85; font-style: italic;">// </span><span style="color: #888a85; font-style: italic;">...</span>
+}
+</pre>
+</div>
+
+<p>
+Caveat: bean is available by its name.
+</p>
+</section>
+</section>
+<section>
+<section id="slide-orgheadline22">
+<h2 id="orgheadline22">Anywhere (potentially)</h2>
+<p>
+Write in Java or Groovy or both.
+Not only tests but actual code.
+</p>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline23">
+<h2 id="orgheadline23">Eclipse Plugins</h2>
+<p>
+I use STS 3.7.3 which is based on Eclipse 4.5 (Mars)
+</p>
+
+<p>
+Plugins to have when dealing with groovy
+</p>
+
+<ol>
+<li>Groovy-Eclipse plugin
+<a href="http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/">http://dist.springsource.org/snapshot/GRECLIPSE/e4.5/</a></li>
+
+</ol>
+
+<ol>
+<li>Maven Development Tools
+<a href="https://marketplace.eclipse.org/content/maven-development-tools-requires-m2e-16/metrics">https://marketplace.eclipse.org/content/maven-development-tools-requires-m2e-16/metrics</a></li>
+
+</ol>
+
+</section>
+</section>
+<section>
+<section id="slide-orgheadline24">
+<h2 id="orgheadline24">Intellij Idea Plugins</h2>
+<p>
+Groovy plugin comes with IDE and most of the functionality works out
+of the box.
+</p>
+</section>
+</section>
+</div>
+</div>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+margin: 0.00,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'slide', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
